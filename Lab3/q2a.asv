@@ -1,0 +1,41 @@
+function[]=q2a(variance)
+    image=imread('CircleSquare.tif');
+    MSE(1:10)=0;x(1:10)=0;
+    for i=1:10
+       D0=i*5;
+       MSE(i)=MSE_gaussian_fn2(image,variance,D0);
+       x(i)=i;
+    end
+    figure;plot(x,MSE);
+end
+
+function[MSE_avg]=MSE_gaussian_fn2(image,variance,D0)
+%faster version
+    tic;
+    num_iterations=10;MSE_avg=0;
+    [s1,s2]=size(image);
+    [x1g,x2g]=meshgrid(1:s1,1:s2);
+    f=double(image);
+    %D0=100;
+    MSE(1:num_iterations)=0;
+    for k=1:num_iterations
+%         fprintf('slice number=%d \n',k);
+        g=imnoise(f,'gaussian',0,variance);
+         figure;imagesc(f);
+        figure;imagesc(g);pause(10);
+        %figure;imshow(g);
+        G=fftshift(fft2(g));
+        D=(x1g-s1/2)^2+(x2g-s2/2)^2;
+        H=exp(-D/(2*D0^2));
+        figure;imagesc(H);
+        F2=G.*H;
+        f2=real(ifft2(fftshift(F2)));
+        figure;imagesc(f);
+        figure;imagesc(f2);pause(10);
+        diff=f-f2;
+        MSE(k)=sum(diff(:).*diff(:))/(s1*s2);
+        %figure;imshow(uint8(f2));
+    end
+    MSE_avg=sum(MSE(:))/num_iterations;
+    toc;
+end
