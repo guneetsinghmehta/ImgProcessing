@@ -1,7 +1,8 @@
 function[MSE_avg]=MSE_non_local_mean_fn(image,variance, neighborhood_size,window_size)
+    
     tic;
     intensity_cutoff=100;
-    patch_dist=40000;
+    patch_dist=400;
     num_iterations=1;MSE_avg=0;
     [s1,s2]=size(image);
     f=double(image);
@@ -21,8 +22,8 @@ function[MSE_avg]=MSE_non_local_mean_fn(image,variance, neighborhood_size,window
                 sub_g=g(m-floor(neighborhood_size/2):m+floor(neighborhood_size/2),n-floor(neighborhood_size/2):n+floor(neighborhood_size/2));
                 patch_mn=g(m-floor(window_size/2):m+floor(window_size/2),n-floor(window_size/2):n+floor(window_size/2));
                 sum_total=0;count=0;
-                for s=1+floor(window_size/2):neighborhood_size+floor(window_size/2)
-                    for t=1+floor(window_size/2):neighborhood_size+floor(window_size/2)
+                for s=1+floor(window_size/2):neighborhood_size-floor(window_size/2)
+                    for t=1+floor(window_size/2):neighborhood_size-floor(window_size/2)
                         patch_st=sub_g(s-floor(window_size/2):s+floor(window_size/2),t-floor(window_size/2):t+floor(window_size/2));
                         diff=patch_mn-patch_st;
 %                         display(diff);
@@ -42,7 +43,8 @@ function[MSE_avg]=MSE_non_local_mean_fn(image,variance, neighborhood_size,window
         display(size(f2));
         diff=f-f2;
         MSE(k)=sum(diff(:).*diff(:));
-        figure;imshow(uint8(f2));pause(5);
+        figure;imagesc((f2));%pause(5);
+        figure;imagesc((f));%pause(5);
     end
     MSE_avg=sum(MSE(:))/num_iterations;
     toc;
