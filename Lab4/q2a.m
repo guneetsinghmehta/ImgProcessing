@@ -6,6 +6,9 @@ function[]=q2a(image,n_var,flag)
     g=gaussian_blurring(image);
     g=adding_noise(g);
     g=weiner_filter(g);
+    MSE=MSE_cal(g,image);
+    title_string=['weiner filtered image with MSE=' num2str(MSE)];
+    figure;imagesc(g);colormap gray; colorbar;title(title_string);
     
      function[]=error_handler(nargin)
         if(nargin==0)
@@ -67,7 +70,7 @@ function[]=q2a(image,n_var,flag)
     end
 
     function[g3]=weiner_filter(g)
-       threshold=0.5;
+       %threshold=0.5;
         g3=g;
        G=fft2(g);
         S=var(F(:));K=var(E(:));
@@ -78,7 +81,7 @@ function[]=q2a(image,n_var,flag)
             for j=1:s2
                 num=(abs(H(i,j)))^2;
                 den=H(i,j)*(num+K/S);
-                if(H(i,j)>threshold)
+                if(H(i,j)~=0)
                     W(i,j)=num/den;
                 else
                    W(i,j)=1.0; 
@@ -92,5 +95,13 @@ function[]=q2a(image,n_var,flag)
         end
     end
 
-   
+   function[MSE]=MSE_cal(image,imout)
+       MSE=0;
+        for m=1:s1
+           for n=1:s2
+               MSE=MSE+(image(m,n)-imout(m,n))^2;
+           end
+        end
+       MSE=MSE/(s1*s2);
+    end
 end

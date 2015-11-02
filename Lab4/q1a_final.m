@@ -15,6 +15,7 @@ function []=q1a_final(image,n_var)
     elseif(nargin==1)
         n_var=0.05;
     end
+    image=double(image);
     [s1,s2]=size(image);
     
 %Step2 
